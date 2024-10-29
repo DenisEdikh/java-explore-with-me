@@ -37,7 +37,7 @@ public class StatClientImpl implements StatClient {
 
     @Override
     public List<ViewStatDto> getViewStats(String start, String end, List<String> uris, boolean unique) {
-        log.debug("Формирование запроса GET на сервер статистики для uris: {}", uris);
+        log.debug("Запрос GET на сервер статистики для uris: {}", uris);
         try {
             return restClient.get()
                     .uri(
