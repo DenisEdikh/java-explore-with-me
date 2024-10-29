@@ -1,0 +1,10 @@
+stats:
+  server:
+    url: http://localhost:9090
+
+server:
+  port: 8080
+
+spring:
+  main:
+    banner-mode: off
