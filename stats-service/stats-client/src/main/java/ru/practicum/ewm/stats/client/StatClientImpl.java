@@ -1,4 +1,4 @@
-package ru.practicum.ewm.stats;
+package ru.practicum.ewm.stats.client;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,6 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
+import ru.practicum.ewm.stats.EndpointHitDto;
+import ru.practicum.ewm.stats.ViewStatDto;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;

@@ -1,4 +1,4 @@
-package ru.practicum.ewm.stats;
+package ru.practicum.ewm.stats.handler;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,5 +16,4 @@ public class ErrorResponse {
     private String reason;
     private String status;
     private LocalDateTime timestamp;
-    private String traceId;
 }

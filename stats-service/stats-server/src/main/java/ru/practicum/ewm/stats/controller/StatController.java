@@ -1,4 +1,4 @@
-package ru.practicum.ewm.stats;
+package ru.practicum.ewm.stats.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.ewm.stats.EndpointHitDto;
+import ru.practicum.ewm.stats.service.StatService;
+import ru.practicum.ewm.stats.ViewStatDto;
 
 import java.util.List;
 

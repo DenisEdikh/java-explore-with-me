@@ -1,7 +1,9 @@
-package ru.practicum.ewm.stats;
+package ru.practicum.ewm.stats.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import ru.practicum.ewm.stats.EndpointHitDto;
+import ru.practicum.ewm.stats.model.EndpointHit;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EndpointHitMapper {

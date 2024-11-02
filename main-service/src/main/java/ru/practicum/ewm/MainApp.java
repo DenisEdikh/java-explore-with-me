@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import ru.practicum.ewm.stats.EndpointHitDto;
-import ru.practicum.ewm.stats.StatClient;
+import ru.practicum.ewm.stats.client.StatClient;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

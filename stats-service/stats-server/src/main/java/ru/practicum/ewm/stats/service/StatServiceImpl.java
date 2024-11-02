@@ -1,9 +1,13 @@
-package ru.practicum.ewm.stats;
+package ru.practicum.ewm.stats.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.ewm.stats.EndpointHitDto;
+import ru.practicum.ewm.stats.mapper.EndpointHitMapper;
+import ru.practicum.ewm.stats.repository.StatRepository;
+import ru.practicum.ewm.stats.ViewStatDto;
 import ru.practicum.ewm.stats.exception.ValidationException;
 
 import java.net.URLDecoder;
