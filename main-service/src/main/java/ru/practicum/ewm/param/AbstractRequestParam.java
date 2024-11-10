@@ -6,13 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @NoArgsConstructor
 @Setter
 @Getter
-public class AdminPageParam {
-    private List<Long> ids;
+public abstract class AbstractRequestParam {
     @PositiveOrZero
     private int from = 0;
     @Positive

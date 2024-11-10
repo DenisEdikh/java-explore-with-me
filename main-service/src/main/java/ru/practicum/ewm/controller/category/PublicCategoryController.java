@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.dto.category.CategoryDto;
 import ru.practicum.ewm.log.Log;
-import ru.practicum.ewm.param.AdminPageParam;
+import ru.practicum.ewm.param.AdminRequestParam;
 import ru.practicum.ewm.service.category.CategoryService;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class PublicCategoryController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<CategoryDto> getAll(@Valid AdminPageParam param, HttpServletRequest req) {
+    public List<CategoryDto> getAll(@Valid AdminRequestParam param, HttpServletRequest req) {
         logger.startLog(req);
         final List<CategoryDto> catDto = categoryService.getAll(param);
         logger.finishLog(req);

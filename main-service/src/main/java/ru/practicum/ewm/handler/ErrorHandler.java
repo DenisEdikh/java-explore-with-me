@@ -1,11 +1,13 @@
 package ru.practicum.ewm.handler;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
 
@@ -32,10 +34,6 @@ public class ErrorHandler {
                                     field.getRejectedValue()
                             )
                     ).toList();
-//        } else if (e instanceof ValidationException ex) {
-//            message = ex.getMessage();
-//            errors.add(ex.getMessage());
-//        }
         } else {
             message = e.getMessage();
             errors.add(e.getMessage());
@@ -43,10 +41,12 @@ public class ErrorHandler {
         return new ErrorResponse(errors, message, reason, HttpStatus.BAD_REQUEST.name(), LocalDateTime.now());
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({DataIntegrityViolationException.class,
+            ConflictException.class,
+            ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
     // TODO добавить обработку удаления внешнего ключа для category
-    public ErrorResponse conflictException(DataIntegrityViolationException e ) {
+    public ErrorResponse conflictException(RuntimeException e) {
         String reason = "Integrity constraint has been violated.";
 
         return new ErrorResponse(List.of(e.getMessage()),

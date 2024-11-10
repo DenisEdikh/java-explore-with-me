@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.dto.category.CategoryDto;
+import ru.practicum.ewm.dto.category.NewCategoryDto;
 import ru.practicum.ewm.log.Log;
 import ru.practicum.ewm.service.category.CategoryService;
 
@@ -25,9 +26,9 @@ public class AdminCategoryController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryDto save(@Valid @RequestBody CategoryDto categoryDto, HttpServletRequest req) {
+    public CategoryDto save(@RequestBody @Valid NewCategoryDto newCategoryDto, HttpServletRequest req) {
         logger.startLog(req);
-        final CategoryDto storedCategory = categoryService.create(categoryDto);
+        final CategoryDto storedCategory = categoryService.create(newCategoryDto);
         logger.finishLog(req);
         return storedCategory;
     }
@@ -42,7 +43,7 @@ public class AdminCategoryController {
 
     @PatchMapping(path = "/{catId}")
     @ResponseStatus(HttpStatus.OK)
-    public CategoryDto update(@Valid @RequestBody CategoryDto categoryDto,
+    public CategoryDto update(@RequestBody @Valid CategoryDto categoryDto,
                               @PathVariable(value = "catId") Long catId,
                               HttpServletRequest req) {
         logger.startLog(req);
