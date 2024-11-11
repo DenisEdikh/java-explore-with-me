@@ -3,8 +3,9 @@ package ru.practicum.ewm.service.event;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -46,26 +47,18 @@ import ru.practicum.ewm.stats.ViewStatDto;
 import ru.practicum.ewm.stats.client.StatClient;
 
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
 public class EventServiceImpl implements EventService {
-    private static final String app = "main-service";
-    private static final LocalDateTime dateStart = LocalDateTime.of(
-            1970, Month.JANUARY, 1, 0, 0, 0
-    );
-    private static final LocalDateTime dateEnd = LocalDateTime.of(
-            9999, Month.DECEMBER, 30, 0, 0, 0
-    );
-
+    private final String app;
     private final StatClient statClient;
     private final EventMapper eventMapper;
     private final EventRepository eventRepository;
@@ -73,6 +66,25 @@ public class EventServiceImpl implements EventService {
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
     private final RequestMapper requestMapper;
+
+    @Autowired
+    public EventServiceImpl(@Value("${application.name}") String app,
+                            StatClient statClient,
+                            EventMapper eventMapper,
+                            EventRepository eventRepository,
+                            UserRepository userRepository,
+                            CategoryRepository categoryRepository,
+                            RequestRepository requestRepository,
+                            RequestMapper requestMapper) {
+        this.app = app;
+        this.statClient = statClient;
+        this.eventMapper = eventMapper;
+        this.eventRepository = eventRepository;
+        this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
+        this.requestRepository = requestRepository;
+        this.requestMapper = requestMapper;
+    }
 
     @Transactional
     @Override
@@ -264,14 +276,15 @@ public class EventServiceImpl implements EventService {
         }
 
         if (source instanceof UpdateEventUserRequest) {
-            updateForUser(source, storedEvent);
+            updateForUser((UpdateEventUserRequest) source, storedEvent);
         } else if (source instanceof UpdateEventAdminRequest) {
-            updateForAdmin(source, storedEvent);
+            updateForAdmin((UpdateEventAdminRequest) source, storedEvent);
         }
         return storedEvent;
     }
 
-    private void updateForUser(UpdateEventRequest source, Event event) {
+    private void updateForUser(UpdateEventUserRequest source, Event event) {
+
         if (EventStateActionUser.CANCEL_REVIEW == source.getStateAction()) {
             event.setState(EventState.CANCELED);
             return;
@@ -283,7 +296,7 @@ public class EventServiceImpl implements EventService {
         updateCommonFields(source, event);
     }
 
-    private void updateForAdmin(UpdateEventRequest source, Event event) {
+    private void updateForAdmin(UpdateEventAdminRequest source, Event event) {
         if (EventState.CANCELED == event.getState()
             || (event.getPublishedOn() != null
                 && source.getEventDate() != null
@@ -327,8 +340,15 @@ public class EventServiceImpl implements EventService {
     }
 
     private void getViewsStats(List<Event> events) {
+        final LocalDateTime start = events.stream()
+                .map(Event::getPublishedOn)
+                .filter(Objects::nonNull)
+                .min(LocalDateTime::compareTo)
+                .orElse(LocalDateTime.now().minusYears(10));
+        final LocalDateTime end = LocalDateTime.now();
+
         final List<String> uris = events.stream().map(e -> "/events/%d".formatted(e.getId())).toList();
-        final Map<String, Long> stats = statClient.getViewStats(dateStart, dateEnd, uris, true)
+        final Map<String, Long> stats = statClient.getViewStats(start, end, uris, true)
                 .stream()
                 .collect(Collectors.toMap(ViewStatDto::getUri, ViewStatDto::getHits));
         events.forEach(e -> e.setViews(stats.get("/events/%d".formatted(e.getId()))));
