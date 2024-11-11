@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/stat
+    url: jdbc:postgresql://localhost:6541/stat
     username: stat
     password: stat
 
@@ -20,8 +20,13 @@ spring:
     init:
       mode: always
 
+  main:
+    banner-mode: off
+
 logging:
   level:
     org.springframework.orm.jpa: INFO
     org.springframework.transaction: INFO
+    org.springframework.transaction.interceptor: TRACE
+    org.springframework.orm.jpa.JpaTransactionManager: INFO
     org.springframework.web: INFO

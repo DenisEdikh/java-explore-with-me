@@ -12,11 +12,14 @@ import ru.practicum.ewm.stats.ViewStatDto;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
 @Slf4j
 public class StatClientImpl implements StatClient {
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final RestClient restClient;
 
     public StatClientImpl(@Value("${stats.server.url}") String url) {
@@ -38,14 +41,14 @@ public class StatClientImpl implements StatClient {
     }
 
     @Override
-    public List<ViewStatDto> getViewStats(String start, String end, List<String> uris, boolean unique) {
+    public List<ViewStatDto> getViewStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
         log.debug("Запрос GET на сервер статистики для uris: {}", uris);
         try {
             return restClient.get()
                     .uri(
                             uri -> uri.path("/stats")
-                                    .queryParam("start", codeTime(start))
-                                    .queryParam("end", codeTime(end))
+                                    .queryParam("start", codeTime(start.format(DATE_TIME_FORMATTER)))
+                                    .queryParam("end", codeTime(end.format(DATE_TIME_FORMATTER)))
                                     .queryParam("uris", uris)
                                     .queryParam("unique", unique)
                                     .build()
