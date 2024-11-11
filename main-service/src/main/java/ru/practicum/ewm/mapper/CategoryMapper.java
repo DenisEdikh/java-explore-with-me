@@ -20,18 +20,10 @@ public class CategoryMapper {
     }
 
     public CategoryDto toCategoryDto(Category category) {
-//        if (category == null) {
-//            return null;
-//        }
-
         return new CategoryDto(category.getId(), category.getName());
     }
 
     public List<CategoryDto> toCategoryDto(List<Category> categories) {
-//        if (categories == null) {
-//            return null;
-//        }
-
         return categories.stream().map(this::toCategoryDto).toList();
     }
 }

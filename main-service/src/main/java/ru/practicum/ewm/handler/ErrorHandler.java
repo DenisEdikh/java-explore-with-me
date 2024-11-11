@@ -45,7 +45,6 @@ public class ErrorHandler {
             ConflictException.class,
             ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
-    // TODO добавить обработку удаления внешнего ключа для category
     public ErrorResponse conflictException(RuntimeException e) {
         String reason = "Integrity constraint has been violated.";
 
@@ -66,5 +65,4 @@ public class ErrorHandler {
                 HttpStatus.CONFLICT.name(),
                 LocalDateTime.now());
     }
-
 }
