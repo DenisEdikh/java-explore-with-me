@@ -15,7 +15,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/main
+    url: jdbc:postgresql://localhost:6542/main
     username: main
     password: main
 
@@ -26,6 +26,9 @@ spring:
       hibernate.jdbc.time_zone: UTC
       hibernate.format_sql: true
     show-sql: true
+
+application:
+  name: main-service
 
 logging:
   level:
