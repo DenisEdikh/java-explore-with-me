@@ -38,12 +38,13 @@ public class Event {
 
     @Enumerated(value = EnumType.STRING)
     @Builder.Default
+    @Column(nullable = false)
     private EventState state = EventState.PENDING;
 
-    @Column(name = "event_date")
+    @Column(name = "event_date", nullable = false)
     private LocalDateTime eventDate;
 
-    @Column(name = "created_on")
+    @Column(name = "created_on", nullable = false)
     @Builder.Default
     private LocalDateTime createdOn = LocalDateTime.now();
 
@@ -74,6 +75,7 @@ public class Event {
     private Category category;
 
     @Embedded
+    @Column(nullable = false)
     private Location location;
 
     @Transient

@@ -1,5 +1,6 @@
 package ru.practicum.ewm.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -31,11 +32,15 @@ public class Request {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private Event event;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requester_id")
     private User requester;
 
     @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
     private RequestState status = RequestState.PENDING;
+
+    @Column(nullable = false)
     private LocalDateTime created = LocalDateTime.now();
 }
