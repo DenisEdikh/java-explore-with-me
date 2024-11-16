@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class AssessmentCalculator {
-    private final static int scoreCoefficient = 5;
+    private static final int scoreCoefficient = 5;
 
     private double calculateRatingEvent(List<Assessment> assessments) {
         double likes = 0.0;
