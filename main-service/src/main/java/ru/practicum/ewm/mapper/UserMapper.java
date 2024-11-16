@@ -26,7 +26,7 @@ public class UserMapper {
             return null;
         }
 
-        return new UserDto(user.getId(), user.getName(), user.getEmail());
+        return new UserDto(user.getId(), user.getName(), user.getEmail(), user.getRating());
     }
 
     public UserShortDto toUserShortDto(User user) {

@@ -80,4 +80,7 @@ public class Event {
 
     @Transient
     private Long views;
+
+    @Transient
+    private Double rating;
 }
