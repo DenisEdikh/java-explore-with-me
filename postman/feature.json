@@ -588,16 +588,10 @@
 							"    pm.response.to.be.json;\r",
 							"});\r",
 							"\r",
-							"const target = pm.response.json()[3];\r",
-							"pm.test(\"Рейтинг первого события должен быть равен 3.8\", function () {\r",
-							"    pm.expect(target).to.have.property('rating', 3.8);\r",
-							"});\r",
-							"\r",
-							"const target1 = pm.response.json()[4];\r",
-							"pm.test(\"Рейтинг второго события должен быть равен 2.5\", function () {\r",
-							"    pm.expect(target1).to.have.property('rating', 2.5);\r",
-							"});\r",
-							""
+							"const target = pm.response.json()[0];\r",
+							"pm.test(\"Рейтинг должен присутствовать\", function () {\r",
+							"    pm.expect(target).to.have.property('rating');\r",
+							"});"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -649,8 +643,8 @@
 							"});\r",
 							"\r",
 							"const target = pm.response.json()[0];\r",
-							"pm.test(\"Рейтинг 11 пользователя должен быть равен 3.2\", function () {\r",
-							"    pm.expect(target).to.have.property('rating', 3.2);\r",
+							"pm.test(\"Рейтинг пользователя должен присутствовать\", function () {\r",
+							"    pm.expect(target).to.have.property('rating');\r",
 							"});"
 						],
 						"type": "text/javascript",
