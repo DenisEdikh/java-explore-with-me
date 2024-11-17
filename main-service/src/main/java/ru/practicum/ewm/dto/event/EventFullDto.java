@@ -26,17 +26,15 @@ public class EventFullDto {
     private LocalDateTime eventDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdOn;
-    // после согласования админом
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishedOn;
     private UserShortDto initiator;
-    // с запросов
     private int confirmedRequests;
     private boolean paid;
     private int participantLimit;
     private boolean requestModeration;
     private CategoryDto category;
     private Location location;
-    // кол-во просмотров со статистики
     private Long views;
+    private Double rating;
 }

@@ -62,7 +62,7 @@ public class ErrorHandler {
         return new ErrorResponse(List.of(e.getMessage()),
                 e.getMessage(),
                 e.getReason(),
-                HttpStatus.CONFLICT.name(),
+                HttpStatus.NOT_FOUND.name(),
                 LocalDateTime.now());
     }
 }

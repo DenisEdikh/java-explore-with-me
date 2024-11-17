@@ -21,10 +21,9 @@ public class EventShortDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     private UserShortDto initiator;
-    // с запросов
     private int confirmedRequests;
     private boolean paid;
     private CategoryDto category;
-    // кол-во просмотров со статистики
     private Long views;
+    private Double rating;
 }

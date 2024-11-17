@@ -4,6 +4,7 @@ drop table if exists events cascade;
 drop table if exists requests cascade;
 drop table if exists compilations cascade;
 drop table if exists event_compilation cascade;
+drop table if exists assessments cascade;
 
 CREATE TABLE IF NOT EXISTS users
 (
@@ -73,4 +74,15 @@ CREATE TABLE IF NOT EXISTS event_compilation
     constraint fk_event_id foreign key (event_id) references events (id),
     constraint fk_compilation_id foreign key (compilation_id) references compilations (id),
     constraint pk_event_compilation_id primary key (event_id, compilation_id)
+);
+
+CREATE TABLE IF NOT EXISTS assessments
+(
+    id       bigint     not null generated always as identity,
+    event_id bigint     not null,
+    user_id  bigint     not null,
+    type     varchar(7) not null,
+    constraint pk_assessments_id primary key (id),
+    constraint fk_event_assessments_id foreign key (event_id) references events (id),
+    constraint fk_assessors_id foreign key (user_id) references users (id)
 );

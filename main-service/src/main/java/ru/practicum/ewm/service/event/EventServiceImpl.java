@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.ewm.calculation.AssessmentCalculator;
 import ru.practicum.ewm.dto.event.EventFullDto;
 import ru.practicum.ewm.dto.event.EventShortDto;
 import ru.practicum.ewm.dto.event.NewEventDto;
@@ -24,6 +25,7 @@ import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.mapper.RequestMapper;
+import ru.practicum.ewm.model.Assessment;
 import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.EventSortType;
@@ -38,6 +40,7 @@ import ru.practicum.ewm.param.AbstractRequestParam;
 import ru.practicum.ewm.param.AdminRequestParam;
 import ru.practicum.ewm.param.PrivateRequestParam;
 import ru.practicum.ewm.param.PublicRequestParam;
+import ru.practicum.ewm.repository.AssessmentRepository;
 import ru.practicum.ewm.repository.CategoryRepository;
 import ru.practicum.ewm.repository.EventRepository;
 import ru.practicum.ewm.repository.RequestRepository;
@@ -66,6 +69,8 @@ public class EventServiceImpl implements EventService {
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
     private final RequestMapper requestMapper;
+    private final AssessmentRepository assessmentRepository;
+    private final AssessmentCalculator assessmentCalculator;
 
     @Autowired
     public EventServiceImpl(@Value("${application.name}") String app,
@@ -75,7 +80,9 @@ public class EventServiceImpl implements EventService {
                             UserRepository userRepository,
                             CategoryRepository categoryRepository,
                             RequestRepository requestRepository,
-                            RequestMapper requestMapper) {
+                            RequestMapper requestMapper,
+                            AssessmentRepository assessmentRepository,
+                            AssessmentCalculator assessmentCalculator) {
         this.app = app;
         this.statClient = statClient;
         this.eventMapper = eventMapper;
@@ -84,6 +91,8 @@ public class EventServiceImpl implements EventService {
         this.categoryRepository = categoryRepository;
         this.requestRepository = requestRepository;
         this.requestMapper = requestMapper;
+        this.assessmentRepository = assessmentRepository;
+        this.assessmentCalculator = assessmentCalculator;
     }
 
     @Transactional
@@ -138,6 +147,7 @@ public class EventServiceImpl implements EventService {
         final Predicate byUserId = QEvent.event.initiator.id.eq(initiatorId);
         final List<Event> storedEvents = eventRepository.findAll(byUserId, page).toList();
         getViewsStats(storedEvents);
+        calculateRating(storedEvents);
         return eventMapper.toEventShortDto(storedEvents);
     }
 
@@ -147,6 +157,7 @@ public class EventServiceImpl implements EventService {
         final Predicate byParam = searchByParam(param);
         final List<Event> storedEvents = eventRepository.findAll(byParam, page).toList();
         getViewsStats(storedEvents);
+        calculateRating(storedEvents);
         return eventMapper.toEventFullDto(storedEvents);
     }
 
@@ -163,12 +174,15 @@ public class EventServiceImpl implements EventService {
         final List<Event> storedEvents = eventRepository.findAll(byParam, page).toList();
         saveHit(req);
         getViewsStats(storedEvents);
+        calculateRating(storedEvents);
         final List<EventShortDto> fullEvents = eventMapper.toEventShortDto(storedEvents);
 
         if (EventSortType.VIEWS == param.getSort()) {
             fullEvents.sort(Comparator.comparing(EventShortDto::getViews));
         } else if (EventSortType.EVENT_DATE == param.getSort()) {
             fullEvents.sort(Comparator.comparing(EventShortDto::getEventDate));
+        } else if (EventSortType.RATING == param.getSort()) {
+            fullEvents.sort(Comparator.comparing(EventShortDto::getRating).reversed());
         }
         return fullEvents;
     }
@@ -178,6 +192,7 @@ public class EventServiceImpl implements EventService {
         checkExistenceUser(initiatorId);
         final Event savedEvent = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(Event.class, eventId));
+        calculateRating(savedEvent);
         return eventMapper.toEventFullDto(savedEvent);
     }
 
@@ -197,6 +212,16 @@ public class EventServiceImpl implements EventService {
         return requestMapper.toParticipationRequestDto(requests);
     }
 
+    private void calculateRating(Event event) {
+        calculateRating(List.of(event));
+    }
+
+    private void calculateRating(List<Event> events) {
+        List<Long> ids = events.stream().map(Event::getId).toList();
+        List<Assessment> assessments = assessmentRepository.findByEventIdIn(ids).stream().toList();
+        assessmentCalculator.calculateRatingEvents(events, assessments);
+    }
+
     private Predicate searchByParam(AbstractRequestParam param) {
         final QEvent qEvent = QEvent.event;
         final BooleanBuilder byAll = new BooleanBuilder();
@@ -208,7 +233,7 @@ public class EventServiceImpl implements EventService {
             byAll.and(qEvent.state.eq(EventState.PUBLISHED));
             Optional.ofNullable(paramPublic.getText()).ifPresent(t -> byAll
                     .and(qEvent.annotation.likeIgnoreCase(t))
-                    .or(qEvent.description.likeIgnoreCase(paramPublic.getText())));
+                    .or(qEvent.description.likeIgnoreCase(t)));
             Optional.ofNullable(paramPublic.getCategories()).ifPresent(c -> byAll.and(qEvent.category.id.in(c)));
             Optional.ofNullable(start).ifPresentOrElse(
                     s -> byAll.and(qEvent.eventDate.after(s)),

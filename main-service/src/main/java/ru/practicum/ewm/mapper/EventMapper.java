@@ -55,6 +55,7 @@ public class EventMapper {
                 .participantLimit(event.getParticipantLimit())
                 .state(event.getState())
                 .views(event.getViews())
+                .rating(event.getRating())
                 .build();
     }
 
@@ -73,6 +74,7 @@ public class EventMapper {
                 .paid(event.isPaid())
                 .confirmedRequests(event.getConfirmedRequests())
                 .views(event.getViews())
+                .rating(event.getRating())
                 .build();
     }
 
